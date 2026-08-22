@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.church.reverb</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>cd "/Users/prince/Church Command Centre/church_command_center/backend" &amp;&amp; /opt/homebrew/bin/php artisan reverb:start --port=8080</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/prince/Church Command Centre/church_command_center/backend</string>
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>/tmp/reverb.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/reverb.log</string>
+    <key>ThrottleInterval</key>
+    <integer>3</integer>
+</dict>
+</plist>
