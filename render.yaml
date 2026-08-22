@@ -1,16 +1,8 @@
 services:
   - type: web
     name: church-command-center-api
-    runtime: php
+    runtime: docker
     plan: free
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader
-      php artisan key:generate --force
-      php artisan migrate --force
-      php artisan db:seed --force
-      php artisan config:cache
-      php artisan route:cache
-    startCommand: php artisan reverb:start --port=8080 & php artisan serve --host=0.0.0.0 --port=$PORT
     envVars:
       - key: APP_ENV
         value: production
@@ -30,8 +22,6 @@ services:
         value: database
       - key: QUEUE_CONNECTION
         value: database
-      - key: LOG_CHANNEL
-        value: stack
       - key: LOG_LEVEL
         value: error
       - key: BROADCAST_CONNECTION
