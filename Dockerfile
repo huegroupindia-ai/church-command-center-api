@@ -13,10 +13,10 @@ WORKDIR /var/www/html
 COPY . .
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
-RUN php artisan key:generate --force || true
 RUN mkdir -p storage/framework/{cache,sessions,views} storage/logs storage/app/public bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"]
+# Use entrypoint script to parse DATABASE_URL
+ENTRYPOINT ["/var/www/html/entrypoint.sh"]
