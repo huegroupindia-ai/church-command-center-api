@@ -3,6 +3,41 @@
 use Illuminate\Support\Str;
 use Pdo\Mysql;
 
+/*
+| Parse DATABASE_URL if available (Railway, Heroku, etc.)
+*/
+
+$databaseUrl = env('DATABASE_URL');
+
+if ($databaseUrl && !env('DB_HOST')) {
+    $parsed = parse_url($databaseUrl);
+    if ($parsed) {
+        $scheme = $parsed['scheme'] ?? '';
+        $driverMap = [
+            'mysql' => 'mysql',
+            'mariadb' => 'mariadb',
+            'postgres' => 'pgsql',
+            'postgresql' => 'pgsql',
+            'sqlite' => 'sqlite',
+        ];
+        $driver = $driverMap[$scheme] ?? $scheme;
+        $host = $parsed['host'] ?? '127.0.0.1';
+        if (str_contains($host, '://')) {
+            $host = parse_url($host, PHP_URL_HOST) ?? $host;
+        }
+        $port = $parsed['port'] ?? ($driver === 'pgsql' ? 5432 : 3306);
+        $dbName = ltrim($parsed['path'] ?? '', '/');
+        $user = $parsed['user'] ?? '';
+        $pass = $parsed['pass'] ?? '';
+        putenv('DB_CONNECTION=' . $driver);
+        putenv('DB_HOST=' . $host);
+        putenv('DB_PORT=' . $port);
+        putenv('DB_DATABASE=' . $dbName);
+        putenv('DB_USERNAME=' . $user);
+        putenv('DB_PASSWORD=' . $pass);
+    }
+}
+
 return [
 
     /*
