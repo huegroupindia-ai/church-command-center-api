@@ -1,5 +1,4 @@
 #!/bin/sh
-set -e
 
 echo "=== Church Command Center Backend Starting ==="
 
@@ -7,7 +6,6 @@ echo "=== Church Command Center Backend Starting ==="
 if [ -n "$DATABASE_URL" ]; then
     echo "DATABASE_URL found: ${DATABASE_URL:0:30}..."
     
-    # Extract components from postgres://user:pass@host:port/dbname
     DB_USER=$(echo "$DATABASE_URL" | sed 's|^[^:]*://\([^:]*\):.*|\1|')
     DB_PASS=$(echo "$DATABASE_URL" | sed 's|^[^:]*://[^:]*:\([^@]*\)@.*|\1|')
     DB_HOST=$(echo "$DATABASE_URL" | sed 's|.*@\([^:]*\):.*|\1|')
@@ -42,6 +40,7 @@ chmod -R 775 storage bootstrap/cache
 
 # Create SQLite file if using SQLite
 if [ "$DB_CONNECTION" = "sqlite" ]; then
+    mkdir -p database
     touch "$DB_DATABASE"
 fi
 
@@ -58,19 +57,26 @@ if [ -z "$APP_KEY" ]; then
     php artisan key:generate --force 2>&1 || true
 fi
 
-# Run migrations
-echo "Running migrations..."
-php artisan migrate --force 2>&1
-MIGRATE_EXIT=$?
-echo "Migration exit code: $MIGRATE_EXIT"
-
-# Seed database if empty (check if users table has data)
-USER_COUNT=$(php artisan tinker --execute="echo \App\Models\User::count();" 2>/dev/null || echo "0")
-echo "User count: $USER_COUNT"
-if [ "$USER_COUNT" = "0" ] || [ -z "$USER_COUNT" ]; then
-    echo "No users found. Seeding database..."
-    php artisan db:seed --force 2>&1 || true
+# Generate JWT_SECRET if not set
+if [ -z "$JWT_SECRET" ]; then
+    echo "Generating JWT_SECRET..."
+    php artisan jwt:secret --force 2>&1 || true
 fi
+
+# Run migrations (output for Railway logs)
+echo "Running migrations..."
+php artisan migrate --force 2>&1 || {
+    echo "Migration failed, trying fresh migrate..."
+    php artisan migrate:fresh --force 2>&1 || true
+}
+
+# Seed database if empty (use a simple approach, no tinker)
+echo "Checking if database needs seeding..."
+php artisan db:seed --force 2>&1 || echo "Seed skipped (already seeded or error)"
+
+# Cache config for performance
+php artisan config:cache 2>&1 || true
+php artisan route:cache 2>&1 || true
 
 # Start the server
 echo "Starting Laravel server on port ${PORT:-8000}..."
