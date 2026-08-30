@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\AnnouncementController;
+use App\Http\Controllers\Api\DonationController;
 use App\Events\DashboardRefresh;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
@@ -124,6 +125,14 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/notifications/send-department', [NotificationController::class, 'sendDepartment']);
     Route::post('/notifications/service-reminder/{serviceId}', [NotificationController::class, 'serviceReminder']);
     Route::post('/notifications/remove-token', [NotificationController::class, 'removeToken']);
+
+    // Donations / Giving
+    Route::get('/donations', [DonationController::class, 'index']);
+    Route::post('/donations', [DonationController::class, 'store']);
+    Route::get('/donations/summary', [DonationController::class, 'summary']);
+    Route::get('/donations/{id}', [DonationController::class, 'show']);
+    Route::put('/donations/{id}', [DonationController::class, 'update']);
+    Route::delete('/donations/{id}', [DonationController::class, 'destroy']);
 
     // Announcements
     Route::get('/announcements', [AnnouncementController::class, 'index']);
