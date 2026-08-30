@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\ServiceChecklistItemController;
 use App\Http\Controllers\Api\EvidenceController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Api\AnnouncementController;
 use App\Events\DashboardRefresh;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
@@ -122,6 +124,23 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/notifications/send-department', [NotificationController::class, 'sendDepartment']);
     Route::post('/notifications/service-reminder/{serviceId}', [NotificationController::class, 'serviceReminder']);
     Route::post('/notifications/remove-token', [NotificationController::class, 'removeToken']);
+
+    // Announcements
+    Route::get('/announcements', [AnnouncementController::class, 'index']);
+    Route::post('/announcements', [AnnouncementController::class, 'store']);
+    Route::get('/announcements/{id}', [AnnouncementController::class, 'show']);
+    Route::put('/announcements/{id}', [AnnouncementController::class, 'update']);
+    Route::delete('/announcements/{id}', [AnnouncementController::class, 'destroy']);
+
+    // Chat / Messaging
+    Route::get('/conversations', [ChatController::class, 'index']);
+    Route::post('/conversations', [ChatController::class, 'store']);
+    Route::get('/conversations/{id}', [ChatController::class, 'show'])->whereNumber('id');
+    Route::delete('/conversations/{id}', [ChatController::class, 'destroy'])->whereNumber('id');
+    Route::post('/conversations/{id}/messages', [ChatController::class, 'sendMessage'])->whereNumber('id');
+    Route::get('/conversations/{id}/messages', [ChatController::class, 'messages'])->whereNumber('id');
+    Route::post('/conversations/{id}/read', [ChatController::class, 'markRead'])->whereNumber('id');
+
 
     $resources = [
         'departments',
