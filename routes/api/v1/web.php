@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\DonationController;
+use App\Http\Controllers\Api\DepartmentController;
 use App\Events\DashboardRefresh;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Broadcast;
@@ -133,6 +134,14 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/donations/{id}', [DonationController::class, 'show']);
     Route::put('/donations/{id}', [DonationController::class, 'update']);
     Route::delete('/donations/{id}', [DonationController::class, 'destroy']);
+
+    // Department Management
+    Route::get('/departments', [DepartmentController::class, 'index']);
+    Route::post('/departments', [DepartmentController::class, 'store']);
+    Route::get('/departments/{id}', [DepartmentController::class, 'show']);
+    Route::put('/departments/{id}', [DepartmentController::class, 'update']);
+    Route::delete('/departments/{id}', [DepartmentController::class, 'destroy']);
+
 
     // Announcements
     Route::get('/announcements', [AnnouncementController::class, 'index']);

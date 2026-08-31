@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: church-command-center-api
+    runtime: docker
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_URL
+        value: https://church-command-center-api.up.railway.app
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_DRIVER
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database

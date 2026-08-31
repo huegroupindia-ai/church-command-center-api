@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://church_user:secret@db:5432/church_command_center
+      - APP_KEY=base64:$(php artisan key:generate --show)
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8000
+    depends_on:
+      - db
+    volumes:
+      - .:/var/www/html
+      - ./storage:/var/www/html/storage
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB=church_command_center
+      POSTGRES_USER=church_user
+      POSTGRES_PASSWORD=secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
